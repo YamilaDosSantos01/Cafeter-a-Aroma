@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cafetería Aroma - Tu refugio personal</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="logo">☕ Cafetería Aroma </div>
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="#inicio">Inicio</a></li>
+                <li><a href="#sobre">Nosotros</a></li>
+                <li><a href="#menu">Menú</a></li>
+                <li><a href="#galeria">Galería</a></li>
+                <li><a href="#contacto">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <section class="hero" id="inicio">
+        <div class="hero-content">
+            <h1>Cafetería Aroma | Palermo</h1>
+            <p>Donde cada taza cuenta una historia</p>
+            <a href="#menu" class="btn">Ver Menú</a>
+        </div>
+    </section>
+
+    <section class="about" id="sobre">
+        <h2>Sobre Nosotros</h2>
+        <div class="about-content">
+            <div class="about-text">
+                <h3>Nuestra Historia</h3>
+                <p>Cafetería Aroma ha sido el punto de encuentro favorito para los amantes del café.</p>
+                <p>Seleccionamos los mejores granos de todo el mundo y los preparamos con pasión.</p>
+                <p>El cafe es mas que una bebida, es una experiencia que conecta personas y crea momentos memorables.</p>
+            </div>
+            <div class="about-image">
+                <img src="img/sobre-nosotros.jpg" alt="Nosotros">
+            </div>
+        </div>
+    </section>
+    
+    <section id="menu">
+        <h2>Nuestro Menú</h2>
+        <div class="menu-grid">
+            <div class="menu-item">
+                <div class="menu-image">
+                    <img src="img/cafe-expresso.jpg" alt="Espresso">
+                </div>
+                <h3>Espresso</h3>
+                <p>Café intenso y aromático</p>
+                <div class="price">$200</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-image">
+                    <img src="img/capuccino.jpg" alt="Capuccino">
+                </div>
+                <h3>Capuccino</h3>
+                <p>Espresso con espuma de leche</p>
+                <div class="price">$230</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-image">
+                    <img src="img/latte.jpg" alt="Latte">
+                </div>
+                <h3>Latte</h3>
+                <p>Suave y cremoso</p>
+                <div class="price">$220</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-image">
+                    <img src="img/cafe-americano.jpg" alt="Americano">
+                </div>
+                <h3>Americano</h3>
+                <p>Clásico y reconfortante</p>
+                <div class="price">$150</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-image">
+                    <img src="img/mocha.jpg" alt="Mocha">
+                </div>
+                <h3>Mocha</h3>
+                <p>Café con chocolate</p>
+                <div class="price">$250</div>
+            </div>
+            <div class="menu-item">
+                <div class="menu-image">
+                    <img src="img/imag-1.jpg" alt="Croissant">
+                </div>
+                <h3>Croissant capressse asado</h3>
+                <p>Rellenos y calentitos</p>
+                <div class="price">$290</div>
+            </div>
+        </div>
+    </section>
+
+    <section class="gallery" id="galeria">
+        <h2>Galería</h2>
+        <div class="gallery-grid">
+            <div class="gallery-item">
+                <img src="img/galeria-1.jpg" alt="Galería 1">
+            </div>
+            <div class="gallery-item">
+                <img src="img/galeria-2.jpg" alt="Galería 2">
+            </div>
+            <div class="gallery-item">
+                <img src="img/galeria-3.jpg" alt="Galería 3">
+            </div>
+            <div class="gallery-item">
+                <img src="img/galeria-4.jpg" alt="Galería 4">
+            </div>
+            <div class="gallery-item">
+                <img src="img/galeria-5.jpg" alt="Galería 5">
+            </div>
+            <div class="gallery-item">
+                <img src="img/galeria-6.jpg" alt="Galería 6">
+            </div>
+        </div>
+    </section>
+
+    <section id="contacto">
+        <h2>Contáctanos</h2>
+        <form class="contact-form" id="contactForm">
+            <div class="form-group">
+                <label for="nombre">Nombre</label>
+                <input type="text" id="nombre" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="mensaje">Mensaje</label>
+                <textarea id="mensaje" required></textarea>
+            </div>
+            <button type="submit" class="btn">Enviar Mensaje</button>
+        </form>
+    </section>
+
+    <footer>
+        <p>&copy; 2025 Cafetería Aroma. Todos los derechos reservados.</p>
+        <p>📍 Montevideo, Uruguay | 📞 +(598)</p>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+</html>
