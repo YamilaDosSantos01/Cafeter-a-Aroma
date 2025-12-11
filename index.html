@@ -9,14 +9,20 @@
 <body>
     <header>
         <nav>
-            <div class="logo">☕ Cafetería Aroma </div>
-            <button class="menu-toggle" id="menuToggle">☰</button>
+            <div class="logo">☕ Cafetería Aroma</div>
+        <button class="menu-toggle" id="menuToggle">☰</button>
+            
             <ul class="nav-links" id="navLinks">
                 <li><a href="#inicio">Inicio</a></li>
                 <li><a href="#sobre">Nosotros</a></li>
                 <li><a href="#menu">Menú</a></li>
                 <li><a href="#galeria">Galería</a></li>
                 <li><a href="#contacto">Contacto</a></li>
+                <!-- CARRITO MOVIDO ACÁ -->
+            <div class="cart-icon" id="cartIcon">
+                <img src="img/carrito.png" alt="Carrito" class="cart-img">
+                <span class="cart-count" id="cartCount">0</span>
+            </div>
             </ul>
         </nav>
     </header>
@@ -28,7 +34,6 @@
             <a href="#menu" class="btn">Ver Menú</a>
         </div>
     </section>
-
     <section class="about" id="sobre">
         <h2>Sobre Nosotros</h2>
         <div class="about-content">
@@ -54,6 +59,9 @@
                 <h3>Espresso</h3>
                 <p>Café intenso y aromático</p>
                 <div class="price">$200</div>
+                <button class="add-to-cart" data-name="Espresso" data-price="200">
+                    Agregar al carrito
+                </button>
             </div>
             <div class="menu-item">
                 <div class="menu-image">
@@ -62,6 +70,9 @@
                 <h3>Capuccino</h3>
                 <p>Espresso con espuma de leche</p>
                 <div class="price">$230</div>
+                <button class="add-to-cart" data-name="Capuccino" data-price="230">
+                    Agregar al carrito
+                </button>
             </div>
             <div class="menu-item">
                 <div class="menu-image">
@@ -70,6 +81,9 @@
                 <h3>Latte</h3>
                 <p>Suave y cremoso</p>
                 <div class="price">$220</div>
+                <button class="add-to-cart" data-name="Latte" data-price="220">
+                    Agregar al carrito
+                </button>
             </div>
             <div class="menu-item">
                 <div class="menu-image">
@@ -78,6 +92,9 @@
                 <h3>Americano</h3>
                 <p>Clásico y reconfortante</p>
                 <div class="price">$150</div>
+                <button class="add-to-cart" data-name="Americano" data-price="150">
+                    Agregar al carrito
+                </button>
             </div>
             <div class="menu-item">
                 <div class="menu-image">
@@ -86,6 +103,9 @@
                 <h3>Mocha</h3>
                 <p>Café con chocolate</p>
                 <div class="price">$250</div>
+                <button class="add-to-cart" data-name="Mocha" data-price="250">
+                    Agregar al carrito
+                </button>
             </div>
             <div class="menu-item">
                 <div class="menu-image">
@@ -94,6 +114,9 @@
                 <h3>Croissant capressse asado</h3>
                 <p>Rellenos y calentitos</p>
                 <div class="price">$290</div>
+                <button class="add-to-cart" data-name="Croissant" data-price="290">
+                    Agregar al carrito
+                </button>
             </div>
         </div>
     </section>
@@ -140,6 +163,28 @@
             <button type="submit" class="btn">Enviar Mensaje</button>
         </form>
     </section>
+
+    <!-- Panel del Carrito -->
+    <div class="cart-panel" id="cartPanel">
+        <div class="cart-header">
+            <img src="img/carrito.png" alt="Carrito" class="cart-header-img">
+            <h3> Mi Pedido</h3>
+            <button class="close-cart" id="closeCart">✕</button>
+        </div>
+        <div class="cart-items" id="cartItems">
+            <p class="empty-cart">Tu carrito está vacío</p>
+        </div>
+        <div class="cart-footer">
+            <div class="cart-total">
+                <span>Total:</span>
+                <span id="cartTotal">$0</span>
+            </div>
+            <button class="btn-checkout">Realizar Pedido</button>
+        </div>
+    </div>
+
+    <!-- Overlay oscuro -->
+    <div class="cart-overlay" id="cartOverlay"></div>
 
     <footer>
         <p>&copy; 2025 Cafetería Aroma. Todos los derechos reservados.</p>

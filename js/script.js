@@ -1,10 +1,9 @@
-// Función para toggle del menú móvil
+// ========== MENÚ MÓVIL ==========
 function toggleMenu() {
     const navLinks = document.getElementById('navLinks');
     navLinks.classList.toggle('active');
 }
 
-// Event listener para el botón del menú
 const menuToggle = document.getElementById('menuToggle');
 if (menuToggle) {
     menuToggle.addEventListener('click', toggleMenu);
@@ -19,35 +18,125 @@ navLinksItems.forEach(link => {
     });
 });
 
-// Manejo del formulario de contacto
+// ========== CARRITO DE COMPRAS ==========
+let cart = [];
+
+// Elementos del DOM
+const cartIcon = document.getElementById('cartIcon');
+const cartPanel = document.getElementById('cartPanel');
+const cartOverlay = document.getElementById('cartOverlay');
+const closeCart = document.getElementById('closeCart');
+const cartCount = document.getElementById('cartCount');
+const cartItems = document.getElementById('cartItems');
+const cartTotal = document.getElementById('cartTotal');
+
+// Abrir carrito
+cartIcon.addEventListener('click', () => {
+    cartPanel.classList.add('active');
+    cartOverlay.classList.add('active');
+});
+
+// Cerrar carrito
+closeCart.addEventListener('click', closeCartPanel);
+cartOverlay.addEventListener('click', closeCartPanel);
+
+function closeCartPanel() {
+    cartPanel.classList.remove('active');
+    cartOverlay.classList.remove('active');
+}
+
+// Agregar al carrito
+const addToCartButtons = document.querySelectorAll('.add-to-cart');
+addToCartButtons.forEach(button => {
+    button.addEventListener('click', () => {
+        const name = button.getAttribute('data-name');
+        const price = parseInt(button.getAttribute('data-price'));
+        
+        addToCart(name, price);
+        
+        // Animación del botón
+        button.textContent = '✓ Agregado';
+        button.style.background = '#ae7827ff';
+        setTimeout(() => {
+            button.textContent = 'Agregar al carrito';
+            button.style.background = '#6B4423';
+        }, 1000);
+    });
+});
+
+function addToCart(name, price) {
+    // Buscar si el producto ya está en el carrito
+    const existingItem = cart.find(item => item.name === name);
+    
+    if (existingItem) {
+        existingItem.quantity++;
+    } else {
+        cart.push({
+            name: name,
+            price: price,
+            quantity: 1
+        });
+    }
+    
+    updateCart();
+}
+
+function removeFromCart(index) {
+    cart.splice(index, 1);
+    updateCart();
+}
+
+function updateCart() {
+    // Actualizar contador
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    cartCount.textContent = totalItems;
+    
+    // Actualizar items del carrito
+    if (cart.length === 0) {
+        cartItems.innerHTML = '<p class="empty-cart">Tu carrito está vacío</p>';
+    } else {
+        cartItems.innerHTML = cart.map((item, index) => `
+            <div class="cart-item">
+                <div class="cart-item-info">
+                    <h4>${item.name}</h4>
+                    <p>Cantidad: ${item.quantity}</p>
+                </div>
+                <div style="display: flex; align-items: center;">
+                    <span class="cart-item-price">$${item.price * item.quantity}</span>
+                    <button class="remove-item" onclick="removeFromCart(${index})">
+                        Eliminar
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+    
+    // Actualizar total
+    const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+    cartTotal.textContent = `$${total}`;
+}
+
+// ========== FORMULARIO DE CONTACTO ==========
 const contactForm = document.getElementById('contactForm');
 if (contactForm) {
     contactForm.addEventListener('submit', function(event) {
         event.preventDefault();
-        
-        // Obtener valores del formulario
         const nombre = document.getElementById('nombre').value;
         const email = document.getElementById('email').value;
-        const mensaje = document.getElementById('mensaje').value;
-        
-        // Mostrar mensaje de confirmación
         alert(`¡Gracias ${nombre}! Tu mensaje ha sido enviado. Te contactaremos pronto a ${email}.`);
-        
-        // Limpiar el formulario
         contactForm.reset();
     });
 }
 
-// Scroll suave para los enlaces de navegación
+// ========== SCROLL SUAVE ==========
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
         const target = document.querySelector(this.getAttribute('href'));
         if (target) {
-            const headerOffset = 80;
+            const headerOffset = 50;
             const elementPosition = target.offsetTop;
             const offsetPosition = elementPosition - headerOffset;
-
             window.scrollTo({
                 top: offsetPosition,
                 behavior: 'smooth'
@@ -56,7 +145,7 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Animación al hacer scroll (elementos aparecen)
+// ========== ANIMACIÓN AL HACER SCROLL ==========
 function animateOnScroll() {
     const elements = document.querySelectorAll('.menu-item, .gallery-item');
     
@@ -71,7 +160,6 @@ function animateOnScroll() {
     });
 }
 
-// Inicializar estilos para animación
 document.addEventListener('DOMContentLoaded', function() {
     const elements = document.querySelectorAll('.menu-item, .gallery-item');
     elements.forEach(element => {
@@ -80,14 +168,12 @@ document.addEventListener('DOMContentLoaded', function() {
         element.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
     });
     
-    // Ejecutar animación inicial
     animateOnScroll();
 });
 
-// Event listener para scroll
 window.addEventListener('scroll', animateOnScroll);
 
-// Cambiar estilo del header al hacer scroll
+// ========== EFECTO HEADER AL HACER SCROLL ==========
 window.addEventListener('scroll', function() {
     const header = document.querySelector('header');
     if (window.scrollY > 100) {
@@ -99,4 +185,25 @@ window.addEventListener('scroll', function() {
     }
 });
 
-console.log('✅ Script cargado correctamente - Café Aroma');
+// ========== BOTÓN REALIZAR PEDIDO ==========
+const checkoutBtn = document.querySelector('.btn-checkout');
+if (checkoutBtn) {
+    checkoutBtn.addEventListener('click', () => {
+        if (cart.length === 0) {
+            alert('Tu carrito está vacío');
+            return;
+        }
+        
+        const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const items = cart.map(item => `${item.name} x${item.quantity}`).join('\n');
+        
+        alert(`¡Pedido realizado!\n\n${items}\n\nTotal: $${total}\n\nGracias por tu compra `);
+        
+        // Vaciar carrito
+        cart = [];
+        updateCart();
+        closeCartPanel();
+    });
+}
+
+console.log('Script cargado correctamente - Cafetería Aroma con Carrito');
