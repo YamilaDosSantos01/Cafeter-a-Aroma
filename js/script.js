@@ -234,7 +234,7 @@ window.addEventListener('scroll', function() {
     }
 });
 
-// ========== BOTÓN REALIZAR PEDIDO ==========
+// ========== BOTÓN REALIZAR PEDIDO CON MODAL MEJORADO ==========
 const checkoutBtn = document.querySelector('.btn-checkout');
 if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
@@ -243,16 +243,51 @@ if (checkoutBtn) {
             return;
         }
         
+        // Generar ticket
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const items = cart.map(item => `${item.name} x${item.quantity}`).join('\n');
         
-        alert(`¡Pedido realizado!\n\n${items}\n\nTotal: $${total}\n\nGracias por tu compra `);
+        // Llenar el modal con los datos
+        const ticketItems = document.getElementById('ticketItems');
+        ticketItems.innerHTML = cart.map(item => `
+            <div class="d-flex justify-content-between mb-2" style="padding: 8px; background: white; border-radius: 8px;">
+                <div>
+                    <strong>${item.name}</strong><br>
+                    <small class="text-muted">x${item.quantity} unidades</small>
+                </div>
+                <div class="text-end">
+                    <strong style="color: #D4A574;">$${item.price * item.quantity}</strong><br>
+                    <small class="text-muted">$${item.price} c/u</small>
+                </div>
+            </div>
+        `).join('');
         
-        // Vaciar carrito
+        document.getElementById('ticketSubtotal').textContent = `$${total}`;
+        document.getElementById('ticketTotal').textContent = `$${total}`;
+        
+        // Número de ticket aleatorio
+        const ticketNum = Math.floor(Math.random() * 10000) + 1000;
+        document.getElementById('ticketNumber').textContent = ticketNum;
+        
+        // Fecha actual
+        const now = new Date();
+        const fecha = now.toLocaleDateString('es-UY', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+        document.getElementById('ticketDate').textContent = fecha;
+        
+        // Mostrar modal
+        const modal = new bootstrap.Modal(document.getElementById('ticketModal'));
+        modal.show();
+        
+        // Vaciar carrito y cerrar panel
         cart = [];
         updateCart();
         closeCartPanel();
     });
 }
 
-console.log('Script cargado correctamente - Cafetería Aroma con Carrito');
+console.log('Script cargado correctamente - Cafetería Aroma con Carrito y Ticket Mejorado');
