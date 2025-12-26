@@ -45,14 +45,48 @@ function closeCartPanel() {
     cartOverlay.classList.remove('active');
 }
 
-// Agregar al carrito
+// ========== CONTROLES DE CANTIDAD EN EL MENÚ ==========
+document.addEventListener('DOMContentLoaded', function() {
+    // Botones + y - en cada producto
+    document.querySelectorAll('.menu-item').forEach(item => {
+        const minusBtn = item.querySelector('.minus');
+        const plusBtn = item.querySelector('.plus');
+        const input = item.querySelector('.quantity-input');
+        
+        if (minusBtn && plusBtn && input) {
+            minusBtn.addEventListener('click', () => {
+                let value = parseInt(input.value);
+                if (value > 1) {
+                    input.value = value - 1;
+                }
+            });
+            
+            plusBtn.addEventListener('click', () => {
+                let value = parseInt(input.value);
+                if (value < 99) {
+                    input.value = value + 1;
+                }
+            });
+        }
+    });
+});
+
+// Agregar al carrito con cantidad
 const addToCartButtons = document.querySelectorAll('.add-to-cart');
 addToCartButtons.forEach(button => {
     button.addEventListener('click', () => {
         const name = button.getAttribute('data-name');
         const price = parseInt(button.getAttribute('data-price'));
         
-        addToCart(name, price);
+        // Buscar el input de cantidad del mismo producto
+        const menuItem = button.closest('.menu-item');
+        const quantityInput = menuItem.querySelector('.quantity-input');
+        const quantity = parseInt(quantityInput.value);
+        
+        addToCart(name, price, quantity);
+        
+        // Resetear cantidad a 1
+        quantityInput.value = 1;
         
         // Animación del botón
         button.textContent = '✓ Agregado';
@@ -64,17 +98,17 @@ addToCartButtons.forEach(button => {
     });
 });
 
-function addToCart(name, price) {
+function addToCart(name, price, quantity) {
     // Buscar si el producto ya está en el carrito
     const existingItem = cart.find(item => item.name === name);
     
     if (existingItem) {
-        existingItem.quantity++;
+        existingItem.quantity += quantity;
     } else {
         cart.push({
             name: name,
             price: price,
-            quantity: 1
+            quantity: quantity
         });
     }
     
@@ -83,6 +117,17 @@ function addToCart(name, price) {
 
 function removeFromCart(index) {
     cart.splice(index, 1);
+    updateCart();
+}
+
+function updateQuantity(index, change) {
+    cart[index].quantity += change;
+    
+    // Si la cantidad llega a 0, eliminar el producto
+    if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+    }
+    
     updateCart();
 }
 
@@ -99,9 +144,13 @@ function updateCart() {
             <div class="cart-item">
                 <div class="cart-item-info">
                     <h4>${item.name}</h4>
-                    <p>Cantidad: ${item.quantity}</p>
+                    <div class="cart-item-controls">
+                        <button class="cart-quantity-btn" onclick="updateQuantity(${index}, -1)">-</button>
+                        <span class="cart-quantity-display">${item.quantity}</span>
+                        <button class="cart-quantity-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                    </div>
                 </div>
-                <div style="display: flex; align-items: center;">
+                <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 0.5rem;">
                     <span class="cart-item-price">$${item.price * item.quantity}</span>
                     <button class="remove-item" onclick="removeFromCart(${index})">
                         Eliminar

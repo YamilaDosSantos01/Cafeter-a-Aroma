@@ -406,7 +406,7 @@ footer p {
     font-weight: bold;
 }
 
-/* Botón agregar al carrito */
+/* Botón agregar al carrito CON EFECTO */
 .add-to-cart {
     background: #6B4423;
     color: white;
@@ -417,12 +417,31 @@ footer p {
     font-weight: bold;
     font-size: 0.9rem;
     margin: 1rem;
-    transition: all 0.3s;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transition: color 0.5s;
 }
 
 .add-to-cart:hover {
+    color: white;
+}
+
+.add-to-cart:after {
+    content: "";
     background: #D4A574;
-    transform: translateY(-2px);
+    position: absolute;
+    z-index: -1;
+    left: -20%;
+    right: -20%;
+    top: 0;
+    bottom: 0;
+    transform: skewX(-45deg) scale(0, 1);
+    transition: all 0.5s;
+}
+
+.add-to-cart:hover:after {
+    transform: skewX(-45deg) scale(1, 1);
 }
 
 /* Panel lateral del carrito */
@@ -528,6 +547,7 @@ footer p {
     font-size: 1.2rem;
 }
 
+/* Botón eliminar CON EFECTO */
 .remove-item {
     background: #e74c3c;
     color: white;
@@ -537,10 +557,31 @@ footer p {
     cursor: pointer;
     font-size: 0.85rem;
     margin-left: 1rem;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transition: color 0.5s;
 }
 
 .remove-item:hover {
+    color: white;
+}
+
+.remove-item:after {
+    content: "";
     background: #c72513;
+    position: absolute;
+    z-index: -1;
+    left: -20%;
+    right: -20%;
+    top: 0;
+    bottom: 0;
+    transform: skewX(-45deg) scale(0, 1);
+    transition: all 0.5s;
+}
+
+.remove-item:hover:after {
+    transform: skewX(-45deg) scale(1, 1);
 }
 
 .cart-footer {
@@ -557,6 +598,7 @@ footer p {
     color: #3D2817;
 }
 
+/* Botón realizar pedido CON EFECTO */
 .btn-checkout {
     width: 100%;
     padding: 1rem;
@@ -567,11 +609,31 @@ footer p {
     font-size: 1.1rem;
     font-weight: bold;
     cursor: pointer;
-    transition: background 0.3s;
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    transition: color 0.5s;
 }
 
 .btn-checkout:hover {
+    color: white;
+}
+
+.btn-checkout:after {
+    content: "";
     background: #B8935F;
+    position: absolute;
+    z-index: -1;
+    left: -20%;
+    right: -20%;
+    top: 0;
+    bottom: 0;
+    transform: skewX(-45deg) scale(0, 1);
+    transition: all 0.5s;
+}
+
+.btn-checkout:hover:after {
+    transform: skewX(-45deg) scale(1, 1);
 }
 
 /* Overlay oscuro */
@@ -588,6 +650,97 @@ footer p {
 
 .cart-overlay.active {
     display: block;
+}
+
+/* ========== CONTROLES DE CANTIDAD ========== */
+
+.quantity-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin: 1rem;
+}
+
+.quantity-btn {
+    background: #D4A574;
+    color: white;
+    border: none;
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    font-size: 1.3rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.quantity-btn:hover {
+    background: #6B4423;
+    transform: scale(1.1);
+}
+
+.quantity-input {
+    width: 50px;
+    height: 35px;
+    text-align: center;
+    border: 2px solid #D4A574;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    padding: 0;
+    color: #6B4423;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 35px;
+}
+
+/* Ocultar flechitas del input number */
+.quantity-input::-webkit-outer-spin-button,
+.quantity-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+.quantity-input[type=number] {
+    -moz-appearance: textfield;
+    appearance: textfield;
+}
+
+/* Botones + y - en el carrito */
+.cart-item-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.cart-quantity-btn {
+    background: #D4A574;
+    color: white;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.cart-quantity-btn:hover {
+    background: #6B4423;
+}
+
+.cart-quantity-display {
+    font-weight: bold;
+    color: #6B4423;
+    min-width: 30px;
+    text-align: center;
 }
 
 /* Responsive - Tablet y Móvil */
