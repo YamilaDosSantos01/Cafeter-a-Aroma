@@ -743,25 +743,45 @@ footer p {
     text-align: center;
 }
 
-/* Responsive - Tablet y Móvil */
+/* ========== RESPONSIVE - TABLET Y MÓVIL ========== */
 @media (max-width: 768px) {
+    
+    /* Hacer que el nav permita que el menú baje */
+    nav {
+        flex-wrap: wrap;
+    }
+    
     .menu-toggle {
         display: block;
     }
 
+    /* El menú ocupa el 100% del ancho y baja */
     .nav-links {
-        position: fixed;
-        left: -100%;
-        top: 60px;
+        width: 100%;
         flex-direction: column;
         background: #3D2817;
-        width: 100%;
-        padding: 2rem;
-        transition: left 0.3s;
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.4s ease;
+        gap: 0;
     }
 
     .nav-links.active {
-        left: 0;
+        max-height: 500px;
+    }
+    
+    .nav-links li {
+        width: 100%;
+        text-align: center;
+        padding: 1rem 0;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    /* Mostrar el carrito en el menú móvil */
+    .nav-links .cart-icon {
+        display: flex !important;
+        margin: 1.5rem auto;
+        padding: 1rem 0;
     }
 
     .hero-content h1 {
@@ -796,13 +816,9 @@ footer p {
         width: 100%;
         right: -100%;
     }
-    
-    .cart-icon {
-        margin-right: 1rem;
-    }
 }
 
-/* Responsive - Móviles pequeños */
+/* ========== RESPONSIVE - MÓVILES PEQUEÑOS ========== */
 @media (max-width: 480px) {
     .hero-content h1 {
         font-size: 2rem;
