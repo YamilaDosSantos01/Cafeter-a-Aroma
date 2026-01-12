@@ -31,14 +31,21 @@ const cartItems = document.getElementById('cartItems');
 const cartTotal = document.getElementById('cartTotal');
 
 // Abrir carrito
-cartIcon.addEventListener('click', () => {
-    cartPanel.classList.add('active');
-    cartOverlay.classList.add('active');
-});
+if (cartIcon) {
+    cartIcon.addEventListener('click', () => {
+        cartPanel.classList.add('active');
+        cartOverlay.classList.add('active');
+    });
+}
 
 // Cerrar carrito
-closeCart.addEventListener('click', closeCartPanel);
-cartOverlay.addEventListener('click', closeCartPanel);
+if (closeCart) {
+    closeCart.addEventListener('click', closeCartPanel);
+}
+
+if (cartOverlay) {
+    cartOverlay.addEventListener('click', closeCartPanel);
+}
 
 function closeCartPanel() {
     cartPanel.classList.remove('active');
@@ -69,6 +76,71 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
+
+    // ========== EVENTO PARA CAMBIAR MÉTODO DE PAGO ==========
+    const metodoPagoSelect = document.getElementById('metodoPago');
+    if (metodoPagoSelect) {
+        metodoPagoSelect.addEventListener('change', function() {
+            const datosTarjeta = document.getElementById('datosTarjeta');
+            if (datosTarjeta) {
+                if (this.value === 'mercadopago') {
+                    datosTarjeta.style.display = 'block';
+                    // Hacer campos de tarjeta requeridos
+                    const numeroTarjeta = document.getElementById('numeroTarjeta');
+                    const nombreTarjeta = document.getElementById('nombreTarjeta');
+                    const vencimientoTarjeta = document.getElementById('vencimientoTarjeta');
+                    const cvvTarjeta = document.getElementById('cvvTarjeta');
+                    
+                    if (numeroTarjeta) numeroTarjeta.required = true;
+                    if (nombreTarjeta) nombreTarjeta.required = true;
+                    if (vencimientoTarjeta) vencimientoTarjeta.required = true;
+                    if (cvvTarjeta) cvvTarjeta.required = true;
+                } else {
+                    datosTarjeta.style.display = 'none';
+                    // Quitar requerido
+                    const numeroTarjeta = document.getElementById('numeroTarjeta');
+                    const nombreTarjeta = document.getElementById('nombreTarjeta');
+                    const vencimientoTarjeta = document.getElementById('vencimientoTarjeta');
+                    const cvvTarjeta = document.getElementById('cvvTarjeta');
+                    
+                    if (numeroTarjeta) numeroTarjeta.required = false;
+                    if (nombreTarjeta) nombreTarjeta.required = false;
+                    if (vencimientoTarjeta) vencimientoTarjeta.required = false;
+                    if (cvvTarjeta) cvvTarjeta.required = false;
+                }
+            }
+        });
+    }
+
+    // Formatear número de tarjeta
+    const numeroTarjetaInput = document.getElementById('numeroTarjeta');
+    if (numeroTarjetaInput) {
+        numeroTarjetaInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\s/g, '');
+            let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+            e.target.value = formattedValue;
+        });
+    }
+
+    // Formatear vencimiento
+    const vencimientoInput = document.getElementById('vencimientoTarjeta');
+    if (vencimientoInput) {
+        vencimientoInput.addEventListener('input', function(e) {
+            let value = e.target.value.replace(/\D/g, '');
+            if (value.length >= 2) {
+                value = value.substring(0, 2) + '/' + value.substring(2, 4);
+            }
+            e.target.value = value;
+        });
+    }
+
+    // Solo números en CVV
+    const cvvInput = document.getElementById('cvvTarjeta');
+    if (cvvInput) {
+        cvvInput.addEventListener('input', function(e) {
+            e.target.value = e.target.value.replace(/\D/g, '');
+        });
+    }
 });
 
 // Agregar al carrito con cantidad
@@ -278,10 +350,6 @@ async function guardarPedidoEnSupabase(numeroPedido, items, total, datosCliente)
 
         if (error) {
             console.error('Error completo:', error);
-            console.error('Code:', error.code);
-            console.error('Message:', error.message);
-            console.error('Details:', error.details);
-            console.error('Hint:', error.hint);
             alert('Error: ' + error.message);
             return false;
         }
@@ -350,13 +418,21 @@ if (checkoutBtn) {
             return;
         }
         
+        // Cerrar el panel del carrito
+        closeCartPanel();
+        
         // Mostrar modal de datos del cliente
-        const modalDatos = new bootstrap.Modal(document.getElementById('datosClienteModal'));
-        modalDatos.show();
+        setTimeout(() => {
+            const modalElement = document.getElementById('datosClienteModal');
+            if (modalElement) {
+                const modalDatos = new bootstrap.Modal(modalElement);
+                modalDatos.show();
+            }
+        }, 300);
     });
 }
 
-// ========== FORMULARIO DE DATOS DEL CLIENTE ==========
+// ========== FORMULARIO DE DATOS DEL CLIENTE - CORREGIDO ==========
 const formDatosCliente = document.getElementById('formDatosCliente');
 if (formDatosCliente) {
     formDatosCliente.addEventListener('submit', async (e) => {
@@ -377,13 +453,38 @@ if (formDatosCliente) {
             return;
         }
         
+        // Si es mercadopago, validar datos de tarjeta
+        if (datosCliente.metodoPago === 'mercadopago') {
+            const numeroTarjeta = document.getElementById('numeroTarjeta').value.trim();
+            const nombreTarjeta = document.getElementById('nombreTarjeta').value.trim();
+            const vencimientoTarjeta = document.getElementById('vencimientoTarjeta').value.trim();
+            const cvvTarjeta = document.getElementById('cvvTarjeta').value.trim();
+            
+            if (!numeroTarjeta || !nombreTarjeta || !vencimientoTarjeta || !cvvTarjeta) {
+                alert('Por favor completa todos los datos de la tarjeta');
+                return;
+            }
+        }
+        
         // Generar número de pedido
         const numeroPedido = 'P' + Date.now().toString().slice(-8);
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         
-        // Cerrar modal de datos
-        const modalDatos = bootstrap.Modal.getInstance(document.getElementById('datosClienteModal'));
-        modalDatos.hide();
+        // CERRAR CORRECTAMENTE EL MODAL DE DATOS
+        const modalElement = document.getElementById('datosClienteModal');
+        const modalDatos = bootstrap.Modal.getInstance(modalElement);
+        if (modalDatos) {
+            modalDatos.hide();
+        }
+        
+        // Remover backdrop manualmente (por si acaso)
+        setTimeout(() => {
+            const backdrops = document.querySelectorAll('.modal-backdrop');
+            backdrops.forEach(backdrop => backdrop.remove());
+            document.body.classList.remove('modal-open');
+            document.body.style.overflow = '';
+            document.body.style.paddingRight = '';
+        }, 300);
         
         // Guardar en Supabase
         const guardado = await guardarPedidoEnSupabase(numeroPedido, cart, total, datosCliente);
@@ -412,7 +513,7 @@ if (formDatosCliente) {
         document.getElementById('ticketTotal').textContent = `$${total}`;
         document.getElementById('ticketNumber').textContent = numeroPedido;
         document.getElementById('ticketClienteNombre').textContent = datosCliente.nombre;
-        document.getElementById('ticketMetodoPago').textContent = datosCliente.metodoPago === 'efectivo' ? 'Efectivo' : 'Mercado Pago';
+        document.getElementById('ticketMetodoPago').textContent = datosCliente.metodoPago === 'efectivo' ? '💵 Efectivo' : '💳 Tarjeta';
         
         // Fecha actual
         const now = new Date();
@@ -426,16 +527,26 @@ if (formDatosCliente) {
         document.getElementById('ticketDate').textContent = fecha;
         
         // Mostrar modal de ticket
-        const modalTicket = new bootstrap.Modal(document.getElementById('ticketModal'));
-        modalTicket.show();
+        setTimeout(() => {
+            const ticketModalElement = document.getElementById('ticketModal');
+            if (ticketModalElement) {
+                const modalTicket = new bootstrap.Modal(ticketModalElement);
+                modalTicket.show();
+            }
+        }, 500);
         
-        // Vaciar carrito y cerrar panel
+        // Vaciar carrito
         cart = [];
         updateCart();
-        closeCartPanel();
         
         // Resetear formulario
         formDatosCliente.reset();
+        
+        // Ocultar sección de tarjeta
+        const datosTarjeta = document.getElementById('datosTarjeta');
+        if (datosTarjeta) {
+            datosTarjeta.style.display = 'none';
+        }
     });
 }
 
