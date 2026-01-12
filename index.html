@@ -14,7 +14,7 @@
     <header>
         <nav>
             <div class="logo">☕ Cafetería Aroma</div>
-        <button class="menu-toggle" id="menuToggle">☰</button>
+            <button class="menu-toggle" id="menuToggle">☰</button>
             
             <ul class="nav-links" id="navLinks">
                 <li><a href="#inicio">Inicio</a></li>
@@ -22,11 +22,12 @@
                 <li><a href="#menu">Menú</a></li>
                 <li><a href="#galeria">Galería</a></li>
                 <li><a href="#contacto">Contacto</a></li>
-                <!-- CARRITO MOVIDO ACÁ -->
-            <div class="cart-icon" id="cartIcon">
-                <img src="img/carrito.png" alt="Carrito" class="cart-img">
-                <span class="cart-count" id="cartCount">0</span>
-            </div>
+                <li><a href="mis-pedidos.html" style="color: #D4A574;">📋</a></li>
+                
+                <div class="cart-icon" id="cartIcon">
+                    <img src="img/carrito.png" alt="Carrito" class="cart-img">
+                    <span class="cart-count" id="cartCount">0</span>
+                </div>
             </ul>
         </nav>
     </header>
@@ -38,6 +39,7 @@
             <a href="#menu" class="btn">Ver Menú</a>
         </div>
     </section>
+
     <section class="about" id="sobre">
         <h2>Sobre Nosotros</h2>
         <div class="about-content">
@@ -179,19 +181,18 @@
         </div>
     </section>
 
-    <!-- NUEVA SECCIÓN DE TESTIMONIOS -->
     <section class="testimonios" id="testimonios" style="background: #f9f9f9; padding: 4rem 2rem;">
         <h2>Lo que dicen nuestros clientes</h2>
         <div class="testimonios-container" style="max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem;">
             <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">☕</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">❤️</div>
                 <p style="font-style: italic; font-size: 1.1rem; color: #666; margin-bottom: 1rem;">
                     "El mejor café de Montevideo, ambiente acogedor y atención de primera"
                 </p>
                 <strong style="color: #6B4423;">- María González</strong>
             </div>
             <div style="background: white; padding: 2rem; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); text-align: center;">
-                <div style="font-size: 3rem; margin-bottom: 1rem;">🍰</div>
+                <div style="font-size: 3rem; margin-bottom: 1rem;">❤️</div>
                 <p style="font-style: italic; font-size: 1.1rem; color: #666; margin-bottom: 1rem;">
                     "Los croissants están increíbles, vuelvo cada semana sin falta"
                 </p>
@@ -245,10 +246,90 @@
         </div>
     </div>
 
-    <!-- Overlay oscuro -->
     <div class="cart-overlay" id="cartOverlay"></div>
 
-    <!-- MODAL DEL TICKET CON BOOTSTRAP -->
+    <!-- ========== MODAL DE DATOS DEL CLIENTE ========== -->
+    <div class="modal fade" id="datosClienteModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="background: linear-gradient(135deg, #3a2817 0%, #6B4423 100%); border-radius: 20px;">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title" style="color: #D4A574; font-weight: bold;">
+                        <i class="bi bi-person-circle"></i> Complete sus datos
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="formDatosCliente">
+                        <div class="mb-3">
+                            <label class="form-label text-white"><i class="bi bi-person"></i> Nombre completo *</label>
+                            <input type="text" class="form-control" id="clienteNombre" required style="border-radius: 10px; padding: 12px;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-white"><i class="bi bi-envelope"></i> Email *</label>
+                            <input type="email" class="form-control" id="clienteEmail" required style="border-radius: 10px; padding: 12px;">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-white"><i class="bi bi-telephone"></i> Teléfono *</label>
+                            <input type="tel" class="form-control" id="clienteTelefono" required style="border-radius: 10px; padding: 12px;" placeholder="Ej: 099123456">
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-white"><i class="bi bi-credit-card"></i> Método de pago *</label>
+                            <select class="form-select" id="metodoPago" required style="border-radius: 10px; padding: 12px;">
+                                <option value="efectivo">💵 Efectivo</option>
+                                <option value="mercadopago">💳 Tarjeta de crédito/débito</option>
+                            </select>
+                        </div>
+
+                        <!-- FORMULARIO DE TARJETA (oculto por defecto) -->
+                        <div id="datosTarjeta" style="display: none;">
+                            <div class="alert alert-info" style="border-radius: 10px; background: rgba(255,255,255,0.2); border: none; color: white;">
+                                <i class="bi bi-info-circle"></i> Simulación de pago con tarjeta
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-white"><i class="bi bi-credit-card-2-front"></i> Número de tarjeta</label>
+                                <input type="text" class="form-control" id="numeroTarjeta" maxlength="19" placeholder="1234 5678 9012 3456" style="border-radius: 10px; padding: 12px;">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label class="form-label text-white"><i class="bi bi-person-badge"></i> Nombre en la tarjeta</label>
+                                <input type="text" class="form-control" id="nombreTarjeta" placeholder="NOMBRE APELLIDO" style="border-radius: 10px; padding: 12px; text-transform: uppercase;">
+                            </div>
+                            
+                            <div class="row">
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white"><i class="bi bi-calendar-event"></i> Vencimiento</label>
+                                        <input type="text" class="form-control" id="vencimientoTarjeta" maxlength="5" placeholder="MM/AA" style="border-radius: 10px; padding: 12px;">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="mb-3">
+                                        <label class="form-label text-white"><i class="bi bi-shield-lock"></i> CVV</label>
+                                        <input type="text" class="form-control" id="cvvTarjeta" maxlength="3" placeholder="123" style="border-radius: 10px; padding: 12px;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label text-white"><i class="bi bi-chat-left-text"></i> Notas adicionales (opcional)</label>
+                            <textarea class="form-control" id="clienteNotas" rows="2" placeholder="Ej: Sin azúcar, para llevar, etc." style="border-radius: 10px; padding: 12px;"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn w-100" style="background: #D4A574; color: #2C1810; font-weight: bold; padding: 12px; border-radius: 10px; font-size: 1.1rem;">
+                            <i class="bi bi-check-circle"></i> Confirmar Pedido
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========== MODAL DEL TICKET ========== -->
     <div class="modal fade" id="ticketModal" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius: 20px; overflow: hidden;">
@@ -266,9 +347,13 @@
                         <hr style="border-top: 2px dashed #ddd;">
                     </div>
                     
-                    <div id="ticketItems" class="mb-3">
-                        <!-- Los items se cargarán acá -->
+                    <!-- INFO DEL CLIENTE -->
+                    <div class="mb-3" style="background: white; padding: 15px; border-radius: 10px;">
+                        <p class="mb-1"><strong><i class="bi bi-person"></i> Cliente:</strong> <span id="ticketClienteNombre"></span></p>
+                        <p class="mb-0"><strong><i class="bi bi-credit-card"></i> Método de pago:</strong> <span id="ticketMetodoPago"></span></p>
                     </div>
+                    
+                    <div id="ticketItems" class="mb-3"></div>
                     
                     <hr style="border-top: 2px dashed #ddd;">
                     
@@ -283,7 +368,7 @@
                     </div>
                     
                     <div class="alert alert-success" style="border-radius: 10px;">
-                        <strong>✓ ¡Gracias por tu compra!</strong><br>
+                        <strong>¡Gracias por tu compra!</strong><br>
                         Tu pedido estará listo en 10-15 minutos.
                     </div>
                     
@@ -304,14 +389,71 @@
     <footer>
         <p>&copy; 2025 Cafetería Aroma. Todos los derechos reservados.</p>
         <p>📍 Montevideo, Uruguay | 📞 +(598)</p>
-        
+    
         <p style="font-size: 0.8rem; margin-top: 1rem; opacity: 0.8;">
             Las imágenes utilizadas en este sitio son con fines demostrativos únicamente.
         </p>
     </footer>
 
-    <script src="js/script.js"></script>
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script>
+    const { createClient } = supabase;
+    const supabaseClient = createClient(
+        'https://ccpxpxqraggizpmmqlnm.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNjcHhweHFyYWdnaXpwbW1xbG5tIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjY4NDk2NzQsImV4cCI6MjA4MjQyNTY3NH0.MT7CzKyuAuzK8-dYxGUUItjWWot2VhJ6dqpIVf5-4YE'
+    );
+    
+    window.supabase = supabaseClient;
+    var supabase = supabaseClient;
+    
+    console.log('Supabase inicializado correctamente');
+</script>
+
+<!-- Script para mostrar/ocultar formulario de tarjeta -->
+<script>
+    document.getElementById('metodoPago').addEventListener('change', function() {
+        const datosTarjeta = document.getElementById('datosTarjeta');
+        if (this.value === 'mercadopago') {
+            datosTarjeta.style.display = 'block';
+            // Hacer campos de tarjeta requeridos
+            document.getElementById('numeroTarjeta').required = true;
+            document.getElementById('nombreTarjeta').required = true;
+            document.getElementById('vencimientoTarjeta').required = true;
+            document.getElementById('cvvTarjeta').required = true;
+        } else {
+            datosTarjeta.style.display = 'none';
+            // Quitar requerido
+            document.getElementById('numeroTarjeta').required = false;
+            document.getElementById('nombreTarjeta').required = false;
+            document.getElementById('vencimientoTarjeta').required = false;
+            document.getElementById('cvvTarjeta').required = false;
+        }
+    });
+
+    // Formatear número de tarjeta (agregar espacios cada 4 dígitos)
+    document.getElementById('numeroTarjeta').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '');
+        let formattedValue = value.match(/.{1,4}/g)?.join(' ') || value;
+        e.target.value = formattedValue;
+    });
+
+    // Formatear vencimiento (MM/AA)
+    document.getElementById('vencimientoTarjeta').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+    });
+
+    // Solo números en CVV
+    document.getElementById('cvvTarjeta').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+</script>
+
+<script src="js/script.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

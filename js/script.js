@@ -234,7 +234,114 @@ window.addEventListener('scroll', function() {
     }
 });
 
-// ========== BOTÓN REALIZAR PEDIDO CON MODAL MEJORADO ==========
+// ========== GUARDAR PEDIDO EN SUPABASE ==========
+async function guardarPedidoEnSupabase(numeroPedido, items, total, datosCliente) {
+    try {
+        // Verificar que supabase esté disponible
+        if (typeof supabase === 'undefined') {
+            console.error('Supabase no está inicializado');
+            alert('Error: No se pudo conectar con la base de datos');
+            return false;
+        }
+
+        // Verificar que items no esté vacío
+        if (!items || items.length === 0) {
+            alert('El carrito está vacío');
+            return false;
+        }
+
+        console.log('Datos a guardar:', {
+            numero_pedido: numeroPedido,
+            cliente_nombre: datosCliente.nombre,
+            cliente_email: datosCliente.email,
+            cliente_telefono: datosCliente.telefono,
+            items: items,
+            total: total,
+            metodo_pago: datosCliente.metodoPago,
+            notas: datosCliente.notas
+        });
+
+        const { data, error } = await supabase
+            .from('pedidos')
+            .insert({
+                numero_pedido: numeroPedido,
+                cliente_nombre: datosCliente.nombre,
+                cliente_email: datosCliente.email,
+                cliente_telefono: datosCliente.telefono,
+                items: items,
+                total: total,
+                estado: 'pendiente',
+                metodo_pago: datosCliente.metodoPago,
+                notas: datosCliente.notas
+            })
+            .select();
+
+        if (error) {
+            console.error('Error completo:', error);
+            console.error('Code:', error.code);
+            console.error('Message:', error.message);
+            console.error('Details:', error.details);
+            console.error('Hint:', error.hint);
+            alert('Error: ' + error.message);
+            return false;
+        }
+
+        console.log('Pedido guardado exitosamente:', data);
+        
+        // Actualizar estadísticas de ventas
+        await actualizarVentasDiarias(total);
+        
+        return true;
+    } catch (error) {
+        console.error('Error catch:', error);
+        alert('Error al procesar: ' + error.message);
+        return false;
+    }
+}
+
+// Actualizar ventas diarias
+async function actualizarVentasDiarias(total) {
+    try {
+        const hoy = new Date().toISOString().split('T')[0];
+        
+        // Buscar si ya existe un registro de hoy
+        const { data: ventasHoy, error: errorBuscar } = await supabase
+            .from('ventas_diarias')
+            .select('*')
+            .eq('fecha', hoy)
+            .single();
+
+        if (ventasHoy) {
+            // Actualizar registro existente
+            const { error: errorActualizar } = await supabase
+                .from('ventas_diarias')
+                .update({
+                    total_pedidos: ventasHoy.total_pedidos + 1,
+                    total_ventas: ventasHoy.total_ventas + total
+                })
+                .eq('fecha', hoy);
+                
+            if (errorActualizar) console.error('Error al actualizar ventas:', errorActualizar);
+        } else {
+            // Crear nuevo registro
+            const { error: errorCrear } = await supabase
+                .from('ventas_diarias')
+                .insert([
+                    {
+                        fecha: hoy,
+                        total_pedidos: 1,
+                        total_ventas: total
+                    }
+                ]);
+                
+            if (errorCrear) console.error('Error al crear ventas:', errorCrear);
+        }
+    } catch (error) {
+        console.error('Error al actualizar ventas diarias:', error);
+    }
+}
+
+// ========== BOTÓN REALIZAR PEDIDO ==========
 const checkoutBtn = document.querySelector('.btn-checkout');
 if (checkoutBtn) {
     checkoutBtn.addEventListener('click', () => {
@@ -243,10 +350,50 @@ if (checkoutBtn) {
             return;
         }
         
-        // Generar ticket
+        // Mostrar modal de datos del cliente
+        const modalDatos = new bootstrap.Modal(document.getElementById('datosClienteModal'));
+        modalDatos.show();
+    });
+}
+
+// ========== FORMULARIO DE DATOS DEL CLIENTE ==========
+const formDatosCliente = document.getElementById('formDatosCliente');
+if (formDatosCliente) {
+    formDatosCliente.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Capturar datos del formulario
+        const datosCliente = {
+            nombre: document.getElementById('clienteNombre').value.trim(),
+            email: document.getElementById('clienteEmail').value.trim(),
+            telefono: document.getElementById('clienteTelefono').value.trim(),
+            metodoPago: document.getElementById('metodoPago').value,
+            notas: document.getElementById('clienteNotas').value.trim()
+        };
+        
+        // Validar campos obligatorios
+        if (!datosCliente.nombre || !datosCliente.email || !datosCliente.telefono) {
+            alert('Por favor completa todos los campos obligatorios');
+            return;
+        }
+        
+        // Generar número de pedido
+        const numeroPedido = 'P' + Date.now().toString().slice(-8);
         const total = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
         
-        // Llenar el modal con los datos
+        // Cerrar modal de datos
+        const modalDatos = bootstrap.Modal.getInstance(document.getElementById('datosClienteModal'));
+        modalDatos.hide();
+        
+        // Guardar en Supabase
+        const guardado = await guardarPedidoEnSupabase(numeroPedido, cart, total, datosCliente);
+        
+        if (!guardado) {
+            alert('Hubo un error al procesar el pedido. Por favor intenta de nuevo.');
+            return;
+        }
+        
+        // Llenar el modal de ticket con los datos
         const ticketItems = document.getElementById('ticketItems');
         ticketItems.innerHTML = cart.map(item => `
             <div class="d-flex justify-content-between mb-2" style="padding: 8px; background: white; border-radius: 8px;">
@@ -263,10 +410,9 @@ if (checkoutBtn) {
         
         document.getElementById('ticketSubtotal').textContent = `$${total}`;
         document.getElementById('ticketTotal').textContent = `$${total}`;
-        
-        // Número de ticket aleatorio
-        const ticketNum = Math.floor(Math.random() * 10000) + 1000;
-        document.getElementById('ticketNumber').textContent = ticketNum;
+        document.getElementById('ticketNumber').textContent = numeroPedido;
+        document.getElementById('ticketClienteNombre').textContent = datosCliente.nombre;
+        document.getElementById('ticketMetodoPago').textContent = datosCliente.metodoPago === 'efectivo' ? 'Efectivo' : 'Mercado Pago';
         
         // Fecha actual
         const now = new Date();
@@ -279,15 +425,18 @@ if (checkoutBtn) {
         });
         document.getElementById('ticketDate').textContent = fecha;
         
-        // Mostrar modal
-        const modal = new bootstrap.Modal(document.getElementById('ticketModal'));
-        modal.show();
+        // Mostrar modal de ticket
+        const modalTicket = new bootstrap.Modal(document.getElementById('ticketModal'));
+        modalTicket.show();
         
         // Vaciar carrito y cerrar panel
         cart = [];
         updateCart();
         closeCartPanel();
+        
+        // Resetear formulario
+        formDatosCliente.reset();
     });
 }
 
-console.log('Script cargado correctamente - Cafetería Aroma con Carrito y Ticket Mejorado');
+console.log('Script cargado correctamente - Cafetería Aroma');
